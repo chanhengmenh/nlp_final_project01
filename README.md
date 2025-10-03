@@ -1,101 +1,132 @@
-# NLP Final Project
+# Tweet Sentiment Analysis
 
-[![Python Version](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
-<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
-
-This project aims to classify the sentiment of tweets as positive, negative, or neutral. It provides a complete workflow for data preprocessing, feature extraction, model training, and prediction.
+This project provides a comprehensive pipeline for sentiment analysis on tweets, classifying them as positive, negative, or neutral. It features two distinct models: a classical machine learning approach (TF-IDF with Logistic Regression) and a modern transformer-based model (RoBERTa).
 
 ## Features
 
--   **Text Preprocessing Pipeline**: Cleans and prepares tweet text for modeling.
--   **Sentiment Classification**: Classifies tweets into positive, negative, or neutral categories.
--   **Trainable Model**: A script to train the sentiment analysis model from scratch.
--   **Prediction Script**: A command-line interface to predict the sentiment of new tweets.
+- **Dual Model Architecture**: Choose between a fast, classical model and a powerful, deep learning-based transformer model.
+- **End-to-End Pipeline**: Scripts for preprocessing, training, evaluation, and prediction are included.
+- **Reproducibility**: Ensures consistent results with a fixed random seed.
+- **In-depth Evaluation**: Generates a classification report, confusion matrix, and performance metrics.
+- **Easy-to-Use**: Simple command-line interface for training and prediction.
 
 ## Project Structure
 
 ```
-.
-├── dataset
-│   └── raw
-│       ├── Restaurant_Reviews.tsv
-│       └── Tweets.csv
-├── models
-│   ├── sentiment_model.pkl
-│   └── vectorizer.pkl
-├── notebooks
-│   └── sentiment_analysis_exploration.ipynb
-├── src
-│   ├── __init__.py
-│   ├── config.py
-│   ├── preprocess.py
-│   ├── train.py
-│   └── predict.py
-├── .gitignore
-└── requirements.txt
+.final_project/
+├───.gitignore
+├───README.md
+├───requirements.txt
+├───dataset/
+│   └───raw/
+│       ├───Restaurant_Reviews.tsv
+│       └───Tweets.csv
+├───models/
+│   ├───sentiment_model.pkl
+│   └───vectorizer.pkl
+├───notebooks/
+│   └───sentiment_analysis_exploration.ipynb
+├───results/
+│   ├───confusion_matrix.png
+│   └───classification_report.csv
+└───src/
+    ├───__init__.py
+    ├───config.py           # Configuration file for paths and parameters
+    ├───evaluate.py         # Model evaluation script
+    ├───predict.py          # Script for making predictions
+    ├───preprocess.py       # Text preprocessing functions
+    ├───train.py            # Model training script
+    └───transformer.py      # Transformer model inference functions
 ```
 
-## Setup Instructions
+## Dataset
 
-### 1. Clone the Repository
+The project uses the "Tweets.csv" dataset, which contains tweets about various airlines and their corresponding sentiment labels (positive, negative, neutral).
 
-```bash
-git clone <repository_url>
-cd <repository_name>
-```
+## Setup
 
-### 2. Create a Virtual Environment
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/chanhengmenh/nlp_final_project01.git
+    cd nlp_final_project01
+    ```
 
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-```
+2.  **Create and activate a virtual environment:**
+    ```bash
+    python -m venv nlp_final_project01
+    source nlp_final_project01/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
 
-### 3. Install Dependencies
-
-Install the required Python packages from `requirements.txt`.
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Download NLTK Data
-
-Run the following commands in a Python interpreter to download the necessary NLTK datasets:
-
-```python
-import nltk
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('punkt')
-```
+3.  **Install the dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ## Usage
 
-### Training the Model
+### 1. Train the Classical Model
 
-To train the sentiment analysis model, run the `train.py` script. This will preprocess the raw data, train the model, and save the artifacts in the `models/` directory.
-
-```bash
-python src/train.py
-```
-
-### Making a Prediction
-
-To make a sentiment prediction on a new tweet, use the `predict.py` script with the `--text` argument.
+To train the sentiment analysis model (TF-IDF + Logistic Regression), run the following command from the root directory:
 
 ```bash
-python src/predict.py --text "This is a great movie!"
+python -m src.train
 ```
 
-## Data
+This script will:
+- Load and preprocess the `Tweets.csv` dataset.
+- Train a Logistic Regression model.
+- Save the trained model and vectorizer to the `models/` directory.
+- Save evaluation metrics to the `results/` directory.
 
-The primary dataset used for this project is `Tweets.csv`, which contains tweets about major U.S. airlines. An additional dataset, `Restaurant_Reviews.tsv`, is also available in the `dataset/raw` directory.
+### 2. Predict Sentiment
+
+To predict the sentiment of a new tweet, use the `predict.py` script. You can choose between the classical model and the transformer model.
+
+**Using the Classical Model:**
+
+```bash
+python -m src.predict "Your tweet text here"
+```
+
+**Example:**
+```bash
+python -m src.predict "@VirginAmerica plus you've added commercials to the experience... tacky."
+# Output: [Classical ML] Predicted sentiment: negative
+```
+
+**Using the Transformer Model:**
+
+Use the `--transformer` flag to leverage the RoBERTa model.
+
+```bash
+python -m src.predict --transformer "Your tweet text here"
+```
+
+**Example:**
+```bash
+python -m src.predict --transformer "@VirginAmerica plus you've added commercials to the experience... tacky."
+# Output: [Transformer] Predicted sentiment: negative (confidence: 0.84)
+```
+
+### 3. Exploratory Data Analysis
+
+To explore the dataset, you can use the Jupyter Notebook located at `notebooks/sentiment_analysis_exploration.ipynb`.
+
+## Model Details
+
+### Classical Model
+
+- **Vectorization**: Term Frequency-Inverse Document Frequency (TF-IDF) with n-grams (1, 2).
+- **Classifier**: Logistic Regression.
+
+### Transformer Model
+
+- **Model**: `cardiffnlp/twitter-roberta-base-sentiment`, a RoBERTa model fine-tuned for sentiment analysis on Twitter data.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a pull request or open an issue if you have any suggestions or find any bugs.
+Contributions are welcome! Please feel free to submit a pull request.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License.
